@@ -11,29 +11,45 @@ import {
   CInputGroup,
   CInputGroupText,
   CRow,
+  CAlert,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
-import { cilLockLocked } from '@coreui/icons'
+import { cilLockLocked, cilArrowLeft } from '@coreui/icons'
 import * as UserService from '../../../services/UserService'
 
 const ChangePassword = () => {
   const [oldPassword, setOldPassword] = useState('')
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
+  const [successMessage, setSuccessMessage] = useState(null)
+  const [errorMessage, setErrorMessage] = useState(null)
   const navigate = useNavigate()
 
   const handleChangePassword = async () => {
     if (newPassword !== confirmPassword) {
-      alert('Mật khẩu mới và xác nhận mật khẩu không khớp')
+      setErrorMessage('Mật khẩu mới và xác nhận mật khẩu không khớp')
       return
     }
 
-    const response = await UserService.changePassword({ oldPassword, newPassword })
-    if (response.status === 'OK') {
-      navigate('/dashboard')
-    } else {
-      alert(response.message)
+    try {
+      const response = await UserService.changePassword({ oldPassword, newPassword })
+      if (response.status === 'OK') {
+        setSuccessMessage('Mật khẩu đã được thay đổi thành công!')
+        setErrorMessage(null)
+        setTimeout(() => {
+          setSuccessMessage(null)
+          navigate('/dashboard')
+        }, 3000)
+      } else {
+        setErrorMessage(response.message || 'Có lỗi xảy ra khi đổi mật khẩu!')
+      }
+    } catch (error) {
+      setErrorMessage(error.message || 'Có lỗi xảy ra khi kết nối tới server!')
     }
+  }
+
+  const handleBackToHome = () => {
+    navigate('/dashboard')
   }
 
   return (
@@ -43,7 +59,18 @@ const ChangePassword = () => {
           <CCard className="mx-4">
             <CCardBody className="p-4">
               <CForm>
-                <h1>Đổi Mật Khẩu</h1>
+                <CRow className="mb-3">
+                  <CCol xs="auto">
+                    <CButton color="primary" onClick={handleBackToHome} size="sm">
+                      <CIcon icon={cilArrowLeft} size="sm" /> Trang chủ
+                    </CButton>
+                  </CCol>
+                  <CCol>
+                    <h1>Đổi Mật Khẩu</h1>
+                  </CCol>
+                </CRow>
+                {successMessage && <CAlert color="success">{successMessage}</CAlert>}
+                {errorMessage && <CAlert color="danger">{errorMessage}</CAlert>}
                 <CInputGroup className="mb-3">
                   <CInputGroupText>
                     <CIcon icon={cilLockLocked} />

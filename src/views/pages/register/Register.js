@@ -58,8 +58,8 @@ const Register = () => {
   const { mutate, data, isSuccess, isError, error: mutationError } = mutation
 
   useEffect(() => {
-    let interval;
-    let timeout;
+    let interval
+    let timeout
 
     if (isSuccess && data?.status === 'OK') {
       setSuccess(`Đăng ký thành công! Chuyển sang trang đăng nhập sau ${countdown} giây...`)

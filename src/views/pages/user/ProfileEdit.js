@@ -12,15 +12,17 @@ import {
   CInputGroup,
   CInputGroupText,
   CRow,
+  CAlert,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
-import { cilUser, cilPhone, cilEnvelopeOpen } from '@coreui/icons'
+import { cilUser, cilPhone, cilEnvelopeOpen, cilArrowLeft } from '@coreui/icons'
 import * as UserService from '../../../services/UserService'
 
 const ProfileEdit = () => {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [phone, setPhone] = useState('')
+  const [successMessage, setSuccessMessage] = useState(null)
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -36,12 +38,24 @@ const ProfileEdit = () => {
 
   const handleSave = async () => {
     const updatedUser = { name, email, phone }
-    await UserService.updateUserData(updatedUser)
-    window.location.reload()
+    const response = await UserService.updateUserData(updatedUser)
+    if (response.status === 'OK') {
+      setSuccessMessage('Thông tin đã được cập nhật thành công!')
+      setTimeout(() => {
+        setSuccessMessage(null)
+        window.location.reload()
+      }, 3000)
+    } else {
+      alert('Có lỗi xảy ra khi cập nhật thông tin!')
+    }
   }
 
   const handleCancel = () => {
     window.location.reload() // Refresh the page to reload original data
+  }
+
+  const handleBackToHome = () => {
+    navigate('/dashboard')
   }
 
   return (
@@ -51,7 +65,21 @@ const ProfileEdit = () => {
           <CCard className="mx-4">
             <CCardBody className="p-4">
               <CForm>
-                <h1>Chỉnh sửa thông tin cá nhân</h1>
+                <CRow className="mb-3">
+                  <CCol xs="auto">
+                    <CButton color="primary" onClick={handleBackToHome} size="sm">
+                      <CIcon icon={cilArrowLeft} size="sm" /> Trang chủ
+                    </CButton>
+                  </CCol>
+                  <CCol>
+                    <h1>Chỉnh sửa thông tin cá nhân</h1>
+                  </CCol>
+                </CRow>
+                {successMessage && (
+                  <CAlert color="success">
+                    {successMessage}
+                  </CAlert>
+                )}
                 <CInputGroup className="mb-3">
                   <CInputGroupText>
                     <CIcon icon={cilUser} />
