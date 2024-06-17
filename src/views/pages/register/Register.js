@@ -18,6 +18,13 @@ import {
 import CIcon from '@coreui/icons-react'
 import { cilLockLocked, cilUser } from '@coreui/icons'
 
+
+const getCookie = (name) => {
+  const value = `; ${document.cookie}`
+  const parts = value.split(`; ${name}=`)
+  if (parts.length === 2) return parts.pop().split(';').shift()
+}
+
 const Register = () => {
   const navigate = useNavigate()
   const [email, setEmail] = useState('')
@@ -28,6 +35,14 @@ const Register = () => {
   const [error, setError] = useState(null)
   const [success, setSuccess] = useState(null)
   const [countdown, setCountdown] = useState(5)
+
+
+  useEffect(() => {
+    const userId = getCookie('userId')
+    if (userId && userId !== 'undefined') {
+      navigate('/dashboard')
+    }
+  }, [navigate])
 
   const handleChangeEmail = (event) => {
     setEmail(event.target.value)

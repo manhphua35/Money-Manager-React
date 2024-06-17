@@ -21,7 +21,6 @@ export default defineConfig(({ mode }) => {
       },
     },
     define: {
-      // vitejs does not support process.env so we have to redefine it
       'process.env': process.env,
     },
     esbuild: {
